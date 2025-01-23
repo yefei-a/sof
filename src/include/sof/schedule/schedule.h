@@ -292,9 +292,13 @@ static inline int schedule_task_after(struct task *task, uint64_t start,
 /** See scheduler_ops::reschedule_task */
 static inline int reschedule_task(struct task *task, uint64_t start)
 {
+#if MT8196_TRACE_ISSUE
 	struct schedulers *schedulers = *arch_schedulers_get();
 	struct schedule_data *sch;
 	struct list_item *slist;
+
+	if (!task)
+		return -EINVAL;
 
 	list_for_item(slist, &schedulers->list) {
 		sch = container_of(slist, struct schedule_data, list);
@@ -309,6 +313,8 @@ static inline int reschedule_task(struct task *task, uint64_t start)
 	}
 
 	return -ENODEV;
+#endif
+	return 0;
 }
 
 /** See scheduler_ops::schedule_task_cancel */
